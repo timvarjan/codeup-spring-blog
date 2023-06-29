@@ -34,4 +34,4 @@ public class PostController {
         return "submit new post";
     }
 }
-}
+
