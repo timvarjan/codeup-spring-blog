@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Roll Dice Result</title>
+</head>
+<body>
+<header th:replace="partials/navbar"></header>
+
+<!-- Include the header partial -->
+<section th:replace="partials/header"></section>
+
+<h1>Roll Dice Result</h1>
+<p>Your guess: <span th:text="${guess}"></span></p>
+<p>Dice roll: <span th:text="${diceRoll}"></span></p>
+<p th:text="${message}"></p>
+
+<form method="post" action="/reset">
+  <button type="submit">Play Again</button>
+</form>
+
+<!-- Include the footer partial -->
+<footer th:replace="partials/footer"></footer>
+</body>
+</html>
