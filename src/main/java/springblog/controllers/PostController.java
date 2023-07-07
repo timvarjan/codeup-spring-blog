@@ -1,47 +1,63 @@
 package springblog.controllers;
 
+import springblog.models.Post;
+import springblog.repositories.PostRepository;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.springframework.web.bind.annotation.PathVariable;
+import java.util.Optional;
+
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
-import springblog.models.Post;
+import org.springframework.web.bind.annotation.GetMapping;
+
+
+@AllArgsConstructor
 
 @Controller
+@RequestMapping("/posts")
 public class PostController {
+    private PostRepository postDao;
 
-    @GetMapping("/posts")
-    public String showAllPosts(Model model) {
-        List<Post> posts = new ArrayList<>();
-        posts.add(new Post("First Post", "This is the first post."));
-        posts.add(new Post("Second Post", "This is the second post."));
+    @GetMapping("")
+    public String posts(Model model){
+        List<Post> posts = postDao.findAll();
 
-        model.addAttribute("posts", posts);
-        return "posts/index";
+        model.addAttribute("posts",posts);
+        return "/posts/show";
     }
 
-    @GetMapping("/posts/{id}")
-    public String showPost(Model model) {
-        Post post = new Post("Sample Post", "This is a sample post.");
+    @GetMapping("/{id}")
+    public String showSinglePost(@PathVariable Long id, Model model){
+        // find the desired post in the db
+        Optional<Post> optionalPost = postDao.findById(id);
+        if(optionalPost.isEmpty()) {
+            System.out.printf("Post with id " + id + " not found!");
+            return "home";
+        }
 
-        model.addAttribute("post", post);
-        return "posts/show";
+        // if we get here, then we found the post. so just open up the optional
+        model.addAttribute("post", optionalPost.get());
+        return "/posts/index";
     }
 
     @GetMapping("/create")
-    @ResponseBody
-    public String insert() {
-        return "view the form for creating a post!";
+    public String showCreate() {
+        return "/posts/create";
     }
 
     @PostMapping("/create")
-    @ResponseBody
-    public String saveNewPost() {
-        return "submit new post";
+    public String doCreate(@RequestParam String title, @RequestParam String body) {
+        Post post = new Post();
+        post.setTitle(title);
+        post.setBody(body);
+
+        postDao.save(post);
+
+        return "redirect:/posts";
     }
 }
-
