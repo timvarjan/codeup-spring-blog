@@ -1,20 +1,16 @@
 package springblog.controllers;
 
 import springblog.models.Post;
+import springblog.models.User;
 import springblog.repositories.PostRepository;
+import springblog.repositories.UserRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.GetMapping;
-
 
 @AllArgsConstructor
 
@@ -22,13 +18,14 @@ import org.springframework.web.bind.annotation.GetMapping;
 @RequestMapping("/posts")
 public class PostController {
     private PostRepository postDao;
+    private UserRepository userDao;
 
     @GetMapping("")
     public String posts(Model model){
         List<Post> posts = postDao.findAll();
 
         model.addAttribute("posts",posts);
-        return "/posts/show";
+        return "/posts/index";
     }
 
     @GetMapping("/{id}")
@@ -42,7 +39,7 @@ public class PostController {
 
         // if we get here, then we found the post. so just open up the optional
         model.addAttribute("post", optionalPost.get());
-        return "/posts/index";
+        return "/posts/show";
     }
 
     @GetMapping("/create")
@@ -55,6 +52,10 @@ public class PostController {
         Post post = new Post();
         post.setTitle(title);
         post.setBody(body);
+
+        // TODO: use user id 1 for now. change later to currently logged in user
+        User loggedInUser = userDao.findById(2L).get();
+        post.setCreator(loggedInUser);
 
         postDao.save(post);
 

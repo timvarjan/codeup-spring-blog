@@ -13,6 +13,10 @@
 <div th:each="post : ${posts}">
   <p th:text="${post.getTitle()}" />
   <p th:text="${post.getBody()}" />
+
+  <!-- Display the email of the user who created the post -->
+<!--  <p th:text="${post.getUser().getEmail()}" />-->
+
 </div>
 
 <!-- Include the footer partial -->
