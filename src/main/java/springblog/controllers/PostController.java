@@ -1,13 +1,15 @@
 package springblog.controllers;
 
-import springblog.models.Post;
-import springblog.models.User;
-import springblog.repositories.PostRepository;
-import springblog.repositories.UserRepository;
+
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import springblog.services.EmailService;
+import springblog.models.Post;
+import springblog.models.User;
+import springblog.repositories.PostRepository;
+import springblog.repositories.UserRepository;
 
 import java.util.List;
 import java.util.Optional;
@@ -19,6 +21,7 @@ import java.util.Optional;
 public class PostController {
     private PostRepository postDao;
     private UserRepository userDao;
+    private EmailService emailService;
 
     @GetMapping("")
     public String posts(Model model){
@@ -43,22 +46,26 @@ public class PostController {
     }
 
     @GetMapping("/create")
-    public String showCreate() {
+    public String showCreate(Model model) {
+        model.addAttribute("newPost", new Post());
         return "/posts/create";
     }
 
     @PostMapping("/create")
-    public String doCreate(@RequestParam String title, @RequestParam String body) {
-        Post post = new Post();
-        post.setTitle(title);
-        post.setBody(body);
+    public String doCreate(@ModelAttribute Post post) {
 
         // TODO: use user id 1 for now. change later to currently logged in user
-        User loggedInUser = userDao.findById(2L).get();
+        User loggedInUser = userDao.findById(1L).get();
         post.setCreator(loggedInUser);
-
         postDao.save(post);
 
         return "redirect:/posts";
+    }
+
+    @GetMapping("/{id}/edit")
+    public String showEdit(@PathVariable Long id, Model model) {
+        Post postToEdit = postDao.getReferenceById(id);
+        model.addAttribute("newPost", postToEdit);
+        return "/posts/create";
     }
 }

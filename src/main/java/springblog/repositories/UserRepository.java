@@ -8,8 +8,7 @@ import springblog.models.User;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
-
-    // Add custom methods for user-related operations if needed
-
+    User findByUsername(String username);
 }
+
 

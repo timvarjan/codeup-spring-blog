@@ -1,29 +1,39 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
 <head>
-    <meta charset="UTF-8">
-    <title>Add a Blog Post!</title>
+    <header th:insert="partials/header :: head"></header>
+    <title>Create Post</title>
 </head>
+
 <body>
-<header th:replace="partials/navbar"></header>
+<nav th:replace="partials/navbar :: navbar">
+</nav>
 
-<!-- Include the header partial -->
-<section th:replace="partials/header"></section>
+<div class="container-fluid">
+    <h1 th:text="${title}">insert title here</h1>
 
-<h3>Add a blog post!</h3>
+    <form class="mb-3" th:action="@{/posts/create}" th:method="post" th:object="${newPost}">
 
-<form method="post" action="/posts/create">
-    <label for="title">Title</label>
-    <input type="text" name="title" id="title" placeholder="Enter a title">
+        <input type="hidden" name="postId" th:field="*{id}">
+        <div class="mb-3">
+            <label for="title" class="form-label">Title</label>
+            <input type="text" name="title" class="form-control" id="title" th:field="*{title}" placeholder="Title goes here">
+        </div>
+        <div class="mb-3">
+            <label for="body" class="form-label">Body</label>
+            <textarea class="form-control" name="body" id="body" th:field="*{body}" rows="3" placeholder="Body goes here"></textarea>
+        </div>
 
-    <label for="body">Body</label>
-    <textarea id="body" name="body" placeholder="Enter a blog post body"></textarea>
+        <button type="submit" class="btn btn-primary">Save Post</button>
 
-    <button type="submit">Save it!</button>
-</form>
+    </form>
 
-<!-- Include the footer partial -->
-<footer th:replace="partials/footer"></footer>
+    <footer th:replace="partials/footer :: footer">
+    </footer>
+
+</div>
+
 
 </body>
 </html>

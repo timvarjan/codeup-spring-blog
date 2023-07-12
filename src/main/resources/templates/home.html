@@ -1,18 +1,33 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      lang="eng">
+
 <head>
-    <meta charset="UTF-8" />
-    <title>Home</title>
+    <meta th:insert="partials/header :: head">
+    <title>Spring Blog</title>
 </head>
+
 <body>
-<header th:replace="partials/navbar"></header>
+<nav th:replace="partials/navbar :: navbar">
+</nav>
 
-<!-- Include the header partial -->
-<section th:replace="partials/header"></section>
+<div class="container-fluid">
+    <h1>This is the home page</h1>
 
-<h1>This is the home page</h1>
+    <div sec:authorize="isAuthenticated()">
+        This content is only shown to authenticated users.
 
-<!-- Include the footer partial -->
-<footer th:replace="partials/footer"></footer>
+        User ID: <span th:text="${#authentication.principal.id}"/>
+        Username: <span th:text="${#authentication.principal.username}"/>
+        Email: <span th:text="${#authentication.principal.email}"/>
+    </div>
+
+    <footer th:replace="partials/footer :: footer">
+    </footer>
+
+</div>
+
+
 </body>
 </html>
