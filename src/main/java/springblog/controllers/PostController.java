@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import springblog.services.AuthBuddy;
 import springblog.services.EmailService;
 import springblog.models.Post;
 import springblog.models.User;
@@ -25,6 +26,9 @@ public class PostController {
 
     @GetMapping("")
     public String posts(Model model){
+        User loggedInUser = AuthBuddy.getLoggedInUser();
+        model.addAttribute("loggedInUser", loggedInUser);
+
         List<Post> posts = postDao.findAll();
 
         model.addAttribute("posts",posts);
@@ -32,7 +36,10 @@ public class PostController {
     }
 
     @GetMapping("/{id}")
-    public String showSinglePost(@PathVariable Long id, Model model){
+    public String showSinglePost(@PathVariable Long id, Model model) {
+        User loggedInUser = AuthBuddy.getLoggedInUser();
+        model.addAttribute("loggedInUser", loggedInUser);
+
         // find the desired post in the db
         Optional<Post> optionalPost = postDao.findById(id);
         if(optionalPost.isEmpty()) {
@@ -47,15 +54,24 @@ public class PostController {
 
     @GetMapping("/create")
     public String showCreate(Model model) {
+        User loggedInUser = AuthBuddy.getLoggedInUser();
+        if(loggedInUser.getId() == 0) {
+            return "redirect:/login";
+        }
+
+        model.addAttribute("loggedInUser", loggedInUser);
+
         model.addAttribute("newPost", new Post());
         return "/posts/create";
     }
 
     @PostMapping("/create")
     public String doCreate(@ModelAttribute Post post) {
+        User loggedInUser = AuthBuddy.getLoggedInUser();
+        if(loggedInUser.getId() == 0) {
+            return "redirect:/login";
+        }
 
-        // TODO: use user id 1 for now. change later to currently logged in user
-        User loggedInUser = userDao.findById(1L).get();
         post.setCreator(loggedInUser);
         postDao.save(post);
 
@@ -64,6 +80,9 @@ public class PostController {
 
     @GetMapping("/{id}/edit")
     public String showEdit(@PathVariable Long id, Model model) {
+        User loggedInUser = AuthBuddy.getLoggedInUser();
+        model.addAttribute("loggedInUser", loggedInUser);
+
         Post postToEdit = postDao.getReferenceById(id);
         model.addAttribute("newPost", postToEdit);
         return "/posts/create";
